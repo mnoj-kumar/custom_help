@@ -129,7 +129,7 @@ class CustomHelpStorage extends SqlContentEntityStorage implements CustomHelpSto
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
+  public function __sleep(): array {
     $vars = parent::__sleep();
     // Do not serialize static cache.
     unset($vars['pageIndex']);
@@ -139,7 +139,7 @@ class CustomHelpStorage extends SqlContentEntityStorage implements CustomHelpSto
   /**
    * {@inheritdoc}
    */
-  public function __wakeup() {
+  public function __wakeup(): array {
     parent::__wakeup();
     // Initialize static caches.
     $this->pageIndex = NULL;
