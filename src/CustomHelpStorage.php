@@ -139,7 +139,7 @@ class CustomHelpStorage extends SqlContentEntityStorage implements CustomHelpSto
   /**
    * {@inheritdoc}
    */
-  public function __wakeup(): array {
+  public function __wakeup(): void {
     parent::__wakeup();
     // Initialize static caches.
     $this->pageIndex = NULL;
