@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - custom_help
+id: custom_help.inline
+label: Inline
+targetEntityType: custom_help
+cache: true

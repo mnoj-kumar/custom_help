@@ -1,0 +1,14 @@
+name: Custom Help
+type: module
+description: "Provides administrable help contents that guide users on its operations."
+package: Administration
+core_version_requirement: ^8.9 || ^9 || ^10 || ^11
+dependencies:
+  - drupal:help
+  - drupal:text
+configure: entity.custom_help_type.collection
+
+# Information added by Drupal.org packaging script on 2022-02-18
+version: "1.0.0-alpha1"
+project: "custom_help"
+datestamp: 1645191131

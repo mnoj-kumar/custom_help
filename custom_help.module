@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * @file
+ * Provides a custom help entity type.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\custom_help\CustomHelpInterface;
+
+/**
+ * Implements hook_help().
+ */
+function custom_help_help($route_name, RouteMatchInterface $route_match) {
+  $output = [];
+  if ($route_name == 'help.page.custom_help') {
+    // Module itself help.
+    $module_help = '<h3>' . t('About') . '</h3>';
+    $module_help .= '<p>' . t('The <a href=":project">Custom Help</a> module extends the core help system with customizable <a href=":texts">help texts</a>.', [':project' => 'https://www.drupal.org/project/custom_help', ':texts' => Url::fromRoute('entity.custom_help.collection')->toString()]) . '</p>';
+    $module_help .= '<p>' . t('Help texts are grouped into <a href=":types">custom help types</a>. Each type defines a collection of help texts intended for a specific audience.', [':types' => Url::fromRoute('entity.custom_help_type.collection')->toString()]) . '</p>';
+    $module_help .= '<p>' . t('Read more on the <a href=":online">online documentation</a>.', [':online' => 'https://www.drupal.org/documentation/modules/custom_help']) . '</p>';
+    $output['custom_help'] = ['#markup' => Markup::create($module_help)];
+  }
+
+  return $output + _custom_help_custom_help();
+}
+
+/**
+ * Add custom help text that matches the current path.
+ *
+ * @return array
+ *   Render array with matching custom help.
+ */
+function _custom_help_custom_help() {
+  $output = [];
+
+  // Checks if the current user can view any custom help.
+  $current_user = \Drupal::currentUser();
+  // Administrators can see any custom help.
+  $can_view_custom_help = $current_user->hasPermission('administer custom help');
+  if (!$can_view_custom_help) {
+    // Check view permission per custom help type.
+    foreach (\Drupal::entityTypeManager()->getStorage('custom_help_type')->getQuery()->execute() as $custom_help_type_id) {
+      $can_view_custom_help = $can_view_custom_help || $current_user->hasPermission('view ' . $custom_help_type_id . ' custom help');
+    }
+  }
+
+  if (!$can_view_custom_help) {
+    return $output;
+  }
+
+  $path_info = \Drupal::request()->getPathInfo();
+  /** @var \Drupal\custom_help\CustomHelpInterface[] $custom_helps */
+  $custom_helps = \Drupal::entityTypeManager()->getStorage('custom_help')
+    ->loadByPathMatch($path_info);
+  if ($custom_helps) {
+    // Append matching custom help.
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('custom_help');
+    foreach ($custom_helps as $custom_help) {
+      if ($custom_help->access('view')) {
+        $output[$custom_help->id()] = $view_builder->view($custom_help, 'inline');
+      }
+    }
+  }
+
+  // Add custom help path cache tags even when there is no inline custom help
+  // for the requested path. This will ensure to display new added help texts
+  // on this page. Note that there is limited support for caching custom help
+  // texts with path patterns, @see CustomHelp::getCacheTagsToInvalidate().
+  $cache_tags = [
+    CustomHelpInterface::PATH_CACHE_TAG . ':' . $path_info,
+    CustomHelpInterface::PATH_CACHE_TAG . ':/*',
+  ];
+  $path_partial = '';
+  foreach (explode('/', $path_info) as $path_part) {
+    if ($path_part) {
+      $path_partial .= '/' . $path_part;
+      if ($path_partial != $path_info) {
+        $cache_tags[] = CustomHelpInterface::PATH_CACHE_TAG . ':' . $path_partial . '/*';
+      }
+    }
+  }
+
+  BubbleableMetadata::createFromRenderArray($output)
+    ->addCacheTags($cache_tags)
+    ->applyTo($output);
+
+  return $output;
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function custom_help_entity_extra_field_info() {
+  $fields = [];
+  foreach (array_keys(\Drupal::service('entity_type.bundle.info')->getBundleInfo('custom_help')) as $bundle) {
+    $fields['custom_help'][$bundle]['display']['more_link'] = [
+      'label' => t('View more link'),
+      'description' => t('A link to the custom help page.'),
+      'weight' => 50,
+      'visible' => FALSE,
+    ];
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function custom_help_custom_help_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('more_link')) {
+    $build['more_link'] = [
+      '#type' => 'link',
+      '#title' => t('More'),
+      '#url' => $entity->toUrl(),
+    ];
+  }
+}

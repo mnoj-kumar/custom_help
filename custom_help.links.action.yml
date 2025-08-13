@@ -1,0 +1,11 @@
+custom_help.type_add:
+  route_name: entity.custom_help_type.add_form
+  title: 'Add custom help type'
+  appears_on:
+    - entity.custom_help_type.collection
+
+custom_help.add_page:
+  route_name: entity.custom_help.add_page
+  title: 'Add custom help text'
+  appears_on:
+    - entity.custom_help.collection

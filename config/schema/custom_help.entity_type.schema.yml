@@ -1,0 +1,15 @@
+custom_help.custom_help_type.*:
+  type: config_entity
+  label: 'Custom Help type config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    description:
+      type: text
+      label: 'Description'
+    uuid:
+      type: string

@@ -1,0 +1,17 @@
+custom_help.admin:
+  title: 'Custom help'
+  parent: help.main
+  description: 'Custom help administration.'
+  route_name: custom_help.admin
+
+entity.custom_help_type.collection:
+  title: 'Types'
+  parent: custom_help.admin
+  description: 'Manage the custom help types.'
+  route_name: entity.custom_help_type.collection
+
+entity.custom_help.collection:
+  title: 'Texts'
+  parent: custom_help.admin
+  description: 'Find and manage the existing custom help texts.'
+  route_name: entity.custom_help.collection

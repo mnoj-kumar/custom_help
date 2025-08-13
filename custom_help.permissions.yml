@@ -1,0 +1,12 @@
+administer custom help types:
+  title: 'Administer custom help types'
+  description: 'Maintain the types of custom help entity.'
+  restrict access: true
+
+administer custom help:
+  title: 'Administer any custom help text'
+  description: 'Manage any custom help text regardless of its type.'
+  restrict access: true
+
+permission_callbacks:
+  - \Drupal\custom_help\CustomHelpPermissions::textTypePermissions

@@ -1,0 +1,15 @@
+custom_help.admin:
+  path: '/admin/help/custom-help'
+  defaults:
+    _controller: '\Drupal\help\Controller\HelpController::helpPage'
+    _title: 'Custom help'
+    name: 'custom_help'
+  requirements:
+    _permission: 'access administration pages'
+
+help.main.custom_help:
+  path: '/admin/help/custom_help'
+  defaults:
+    _controller: '\Drupal\custom_help\Controller\CustomHelpController::helpPageRedirection'
+  requirements:
+    _permission: 'access administration pages'
