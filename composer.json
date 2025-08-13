@@ -1,0 +1,19 @@
+{
+  "name": "drupal/custom_help",
+  "description": "Provides custom help features and enhancements for Drupal.",
+  "type": "drupal-module",
+  "homepage": "https://www.drupal.org/project/custom_help",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/custom_help"
+  },
+  "license": "GPL-2.0+",
+  "require": {
+  },
+  "authors": [
+    {
+      "name": "Manoj Kumar",
+      "email": "manoj@ewayfarer.com",
+      "role": "Creator and Maintainer"
+    }
+  ]
+}
